@@ -6,8 +6,13 @@ const express = require("express");
 const app = express();
 const ExpressError = require("./expressError")
 
+const companiesRoutes = require('./routes/companies');
+const invoicesRoutes = require('./routes/invoices');
+
 app.use(express.json());
 
+app.use('/companies', companiesRoutes);
+app.use('/invoices', invoicesRoutes);
 
 /** 404 handler */
 
@@ -27,5 +32,18 @@ app.use((err, req, res, next) => {
   });
 });
 
+app.use((err, req, res, next) => {
+  res.status(err.status || 500);
+  return res.json({
+    error: {
+      message: err.message || 'Internal Server Error'
+    }
+  });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is listening on port ${PORT}`)
+});
 
 module.exports = app;
